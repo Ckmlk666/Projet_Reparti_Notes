@@ -1,0 +1,23 @@
+---
+- name: Déploiement complet du Projet Réparti sur Minikube
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  tasks:
+    - name: 1. Déploiement de la base de données (Postgres)
+      command: kubectl apply -f ../k8s/postgres.yaml
+
+    - name: 2. Déploiement du Backend (Django)
+      command: kubectl apply -f ../k8s/backend-deployment.yaml
+
+    - name: 3. Déploiement du Frontend (React)
+      command: kubectl apply -f ../k8s/frontend-deployment.yaml
+
+    - name: 4. Pause de 15 secondes pour laisser les pods démarrer
+      pause:
+        seconds: 15
+
+    - name: 5. Exécution des migrations de la base de données
+      command: kubectl exec -it deployment/backend-deployment -- python manage.py migrate
+      ignore_errors: yes # On ignore l'erreur si ça a déjà été fait

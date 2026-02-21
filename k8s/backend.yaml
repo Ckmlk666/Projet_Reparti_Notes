@@ -1,0 +1,41 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-service
+spec:
+  type: NodePort # Permet d'accéder au backend depuis ton navigateur
+  ports:
+    - port: 8000
+      targetPort: 8000
+      nodePort: 30001 # Port exposé sur ton PC
+  selector:
+    app: backend
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+        - name: django
+          image: ton-pseudo/django-notes:v1 # <--- REMPLACE PAR TON NOM DOCKER HUB
+          env:
+            - name: DATABASE_HOST
+              value: "db" # Nom du service Postgres créé précédemment
+            - name: DATABASE_NAME
+              value: "notes_db"
+            - name: DATABASE_USER
+              value: "admin"
+            - name: DATABASE_PASSWORD
+              value: "password123"
+          ports:
+            - containerPort: 8000

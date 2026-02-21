@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine # Version légère
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=notes_db
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=password123
+
+  backend:
+    build: ./backend
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - ./backend:/app
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_NAME=notes_db
+      - DATABASE_USER=admin
+      - DATABASE_PASSWORD=password123
+      - DATABASE_HOST=db
+    depends_on:
+      - db
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules # <-- Ajoutez cette ligne cruciale
+    depends_on:
+      - backend   
+
+volumes:
+  postgres_data:

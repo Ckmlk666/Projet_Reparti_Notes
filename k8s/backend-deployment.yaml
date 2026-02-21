@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-deployment
+spec:
+  replicas: 1 # Kubernetes va lancer 2 copies de ton API (Haute disponibilité !)
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+      - name: django
+        image: malickcissoko/django-notes:v1 # Ton image sur Docker Hub
+        ports:
+        - containerPort: 8000
+        env:
+        - name: DATABASE_HOST
+          value: "db" # Il cherchera le Service "db" qu'on a créé avant
+        - name: DATABASE_NAME
+          value: "notes_db"
+        - name: DATABASE_USER
+          value: "admin"
+        - name: DATABASE_PASSWORD
+          value: "password123"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-service
+spec:
+  selector:
+    app: backend
+  ports:
+    - protocol: TCP
+      port: 8000
+      targetPort: 8000
+  type: ClusterIP # Service interne au cluster
