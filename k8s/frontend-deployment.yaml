@@ -14,7 +14,8 @@ spec:
     spec:
       containers:
       - name: react
-        image: malickcissoko/react-notes:v1
+        image: projet_reparti_notes-frontend:latest
+        imagePullPolicy: Never
         ports:
         - containerPort: 5173
 ---

@@ -1,0 +1,29 @@
+---
+- name: Provisioning de l'infrastructure (Docker, Kubernetes, Jenkins)
+  hosts: localhost
+  connection: local
+  become: yes
+  tasks:
+    - name: 1. Mise à jour du cache APT
+      apt:
+        update_cache: yes
+
+    - name: 2. Installation de Docker
+      apt:
+        name: docker.io
+        state: present
+
+    - name: 3. Installation des prérequis pour Kubernetes et Jenkins
+      apt:
+        name: ['apt-transport-https', 'curl', 'default-jre']
+        state: present
+
+    - name: 4. Installation de Kubernetes (kubectl)
+      apt:
+        name: kubectl
+        state: present
+
+    - name: 5. Installation de Jenkins
+      apt:
+        name: jenkins
+        state: present
